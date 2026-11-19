@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delta Billing</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    :root { --ink:#1d2733; --muted:#5b6775; --line:#d9dee5; --brand:#1f5fa8; --bg:#ffffff; --warn:#fff4cc; --ok:#e6f4ea; }
+    body { margin:0; padding:14px; font:14px/1.45 "Segoe UI", system-ui, sans-serif; color:var(--ink); background:var(--bg); }
+    h1 { font-size:17px; margin:0 0 2px; }
+    .sub { color:var(--muted); margin:0 0 14px; font-size:12px; }
+    section { border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:12px; }
+    h2 { font-size:13px; margin:0 0 8px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+    label { display:block; font-size:12px; color:var(--muted); margin:6px 0 2px; }
+    select, input { width:100%; box-sizing:border-box; padding:6px 8px; border:1px solid var(--line); border-radius:6px; font:inherit; }
+    .row { display:flex; gap:8px; } .row > div { flex:1; }
+    button { width:100%; padding:9px; margin-top:10px; border:0; border-radius:6px; background:var(--brand); color:#fff; font:600 14px "Segoe UI", sans-serif; cursor:pointer; }
+    button.secondary { background:#eef2f7; color:var(--ink); }
+    button:disabled { opacity:.5; cursor:default; }
+    #status { white-space:pre-wrap; font-size:12px; padding:8px; border-radius:6px; background:#f5f7fa; min-height:20px; }
+    #status.ok { background:var(--ok); } #status.warn { background:var(--warn); }
+    .who { font-size:12px; color:var(--muted); margin-top:6px; }
+  </style>
+</head>
+<body>
+  <h1>Delta Billing</h1>
+  <p class="sub">Pulls trips from Google Calendar into one sheet per facility.</p>
+
+  <section>
+    <h2>1. Google account</h2>
+    <button id="signin">Sign in with Google</button>
+    <div class="who" id="who">Not signed in</div>
+  </section>
+
+  <section>
+    <h2>2. Pull trips</h2>
+    <label for="range">Dates</label>
+    <select id="range">
+      <option value="mtd">This month so far</option>
+      <option value="last">Last month (for invoicing)</option>
+      <option value="custom">Pick dates…</option>
+    </select>
+    <div class="row" id="customDates" hidden>
+      <div><label for="from">From</label><input type="date" id="from"></div>
+      <div><label for="to">To</label><input type="date" id="to"></div>
+    </div>
+    <button id="pull" disabled>Pull trips</button>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <div id="status">Ready.</div>
+  </section>
+
+  <section>
+    <h2>Setup</h2>
+    <button class="secondary" id="setup">Add Settings, Rates and Facilities sheets</button>
+  </section>
+
+  <script src="billing-core.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>

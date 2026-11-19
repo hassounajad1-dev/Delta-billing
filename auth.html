@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign in</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+</head>
+<body style="font:14px 'Segoe UI', sans-serif; padding:20px;">
+  <p id="msg">Opening Google sign-in…</p>
+  <script>
+    // Step 1: opened by the task pane with ?client_id=... -> go to Google.
+    // Step 2: Google sends the browser back here with #access_token=... -> hand it to the task pane.
+    var params = new URLSearchParams(location.search);
+    var hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    var here = location.origin + location.pathname;
+
+    if (params.get('client_id')) {
+      sessionStorage.setItem('state', Math.random().toString(36).slice(2));
+      var q = new URLSearchParams({
+        client_id: params.get('client_id'),
+        redirect_uri: here,
+        response_type: 'token',
+        scope: 'https://www.googleapis.com/auth/calendar.readonly',
+        include_granted_scopes: 'true',
+        prompt: 'select_account',
+        state: sessionStorage.getItem('state')
+      });
+      location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + q.toString();
+    } else {
+      Office.onReady(function () {
+        var result = hash.get('access_token')
+          ? { ok: true, token: hash.get('access_token'), expiresIn: Number(hash.get('expires_in') || 3600),
+              stateOk: hash.get('state') === sessionStorage.getItem('state') }
+          : { ok: false, error: hash.get('error') || 'No token returned' };
+        if (result.ok && !result.stateOk) result = { ok: false, error: 'Sign-in check failed, please try again' };
+        document.getElementById('msg').textContent = result.ok ? 'Signed in. You can close this window.' : result.error;
+        Office.context.ui.messageParent(JSON.stringify(result));
+      });
+    }
+  </script>
+</body>
+</html>
